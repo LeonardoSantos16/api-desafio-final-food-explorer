@@ -93,6 +93,48 @@ class FoodController{
             }
             return response.status(500).json({ error: 'Erro ao deletar prato' });
         }
+    }
+
+    async update(request, response){
+        const { title, description, preco, category, ingredients} = request.body
+        const { id } = request.params
+        const user_id = request.user.id;
+        try{
+            const user = await knex("prate_descriptions").where({ id }).first();
+            if(!user){
+                throw new AppError("Prato não encontrado")
+            }
+            
+
+            await knex("prate_descriptions").where({ id }).update({
+                title,
+                description,
+                preco,
+                category
+            });
+
+            if (ingredients) {
+                await knex("food_ingredient").where({ prate_id: id }).del();
+
+                const ingredientsInsert = ingredients.map(name => {
+                    return {
+                      prate_id: id,
+                      name,
+                      user_id
+                    }
+                  })
+
+                await knex("food_ingredient")
+                    .insert(ingredientsInsert);
+            }
+           
+            return response.status(200).json();
+        } catch (error) {
+            if (error instanceof AppError) {
+                return response.status(error.statusCode).json({ error: error.message });
+            }
+            return response.status(500).json({error});
+        }       
         
     }
 }

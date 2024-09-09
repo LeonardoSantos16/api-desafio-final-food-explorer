@@ -10,5 +10,5 @@ foodRoutes.post("/", foodController.create);
 foodRoutes.get("/:id", foodController.show);
 foodRoutes.get("/", foodController.index);
 foodRoutes.delete("/:id", foodController.delete);
-
+foodRoutes.patch("/:id", foodController.update);
 module.exports = foodRoutes;
