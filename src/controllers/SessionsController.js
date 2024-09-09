@@ -2,7 +2,7 @@ const knex = require("../database/knex");
 const AppError = require("../utils/AppError");
 const { compare } = require("bcryptjs");
 const { sign } = require("jsonwebtoken");
-const authConfig  = require("../Configs/auth");
+const authConfig  = require("../configs/auth");
 
 class SessionsController{
     async create(request, response){

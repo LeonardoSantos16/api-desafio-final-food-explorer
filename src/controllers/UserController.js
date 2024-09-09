@@ -20,3 +20,5 @@ class UsersController {
       return response.status(201).json();
     }
 }
+
+module.exports = UsersController
