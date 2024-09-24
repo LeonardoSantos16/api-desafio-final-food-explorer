@@ -2,14 +2,14 @@ const knex = require("../database/knex")
 const AppError = require("../utils/AppError")
 class FoodController{
     async create(request, response){
-        const { title, description, preco, food_icon, category, ingredients} = request.body
+        const { title, description, price, food_icon, category, ingredients} = request.body
         const user_id = request.user.id;
         try{
             const [prate_id] = await knex("prate_descriptions").insert({
                 title,
                 description,
                 user_id,
-                preco,
+                price,
                 food_icon,
                 category
             })
@@ -66,13 +66,12 @@ class FoodController{
                             .select('*')
                             .join('food_ingredient', 'prate_descriptions.id', '=', 'food_ingredient.prate_id')
                             .where('prate_descriptions.title', 'like', `%${query}%`) 
-                            .orWhere('food_ingredient.name', 'like', `%${query}%`)
+                            .orWhere('food_ingredient.name', 'like', `%${query}%`).groupBy('prate_descriptions.id')
                             .orderBy('prate_descriptions.title'); 
                     
             } else{
                 food = await knex("prate_descriptions")
             }
-            console.log(food)
             return response.json(food)
         } catch (error) {
             console.error(error);
@@ -98,7 +97,7 @@ class FoodController{
     }
 
     async update(request, response){
-        const { title, description, preco, category, ingredients} = request.body
+        const { title, description, price, category, ingredients} = request.body
         const { id } = request.params
         const user_id = request.user.id;
         try{
@@ -113,7 +112,7 @@ class FoodController{
             await knex("prate_descriptions").where({ id }).update({
                 title,
                 description,
-                preco,
+                price,
                 category,
             });
             console.log("teste2")
