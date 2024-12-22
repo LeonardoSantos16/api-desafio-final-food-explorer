@@ -58,17 +58,22 @@ class FoodController{
     
         try{
             if (query) {
-                // Executando a consulta com junção entre as tabelas
-               // food = await knex('prate_descriptions')
-                //    .whereLike("title", `%${query}%`).orderBy("title")
-                            //.orWhere('food_ingredient.name', 'like', `%${query}%`);
-                            food = await knex('prate_descriptions')
-                            .select('*')
-                            .join('food_ingredient', 'prate_descriptions.id', '=', 'food_ingredient.prate_id')
-                            .where('prate_descriptions.title', 'like', `%${query}%`) 
-                            .orWhere('food_ingredient.name', 'like', `%${query}%`).groupBy('prate_descriptions.id')
-                            .orderBy('prate_descriptions.title'); 
-                    
+    
+            food = await knex('prate_descriptions')
+            .select(
+                'prate_descriptions.id',
+                'prate_descriptions.title',
+                'prate_descriptions.description',
+                'prate_descriptions.price',
+                'prate_descriptions.food_icon',
+                'prate_descriptions.category'
+            )
+                .join('food_ingredient', 'prate_descriptions.id', '=', 'food_ingredient.prate_id')
+                .where('prate_descriptions.title', 'like', `%${query}%`) 
+                .orWhere('food_ingredient.name', 'like', `%${query}%`)
+                .groupBy('prate_descriptions.id', 'prate_descriptions.title', 'prate_descriptions.description', 'prate_descriptions.price', 'prate_descriptions.food_icon', 'prate_descriptions.category')
+                .orderBy('prate_descriptions.title');
+
             } else{
                 food = await knex("prate_descriptions")
             }
@@ -101,25 +106,15 @@ class FoodController{
         const { id } = request.params
         const user_id = request.user.id;
         try{
-            /*
-            const user = await knex("prate_descriptions").where({ id }).first();
-            if(!user){
-                throw new AppError("Prato não encontrado")
-            }
-            */
-            console.log("teste1")
-
             await knex("prate_descriptions").where({ id }).update({
                 title,
                 description,
                 price,
                 category,
             });
-            console.log("teste2")
 
             if (ingredients) {
                 await knex("food_ingredient").where({ prate_id: id }).del();
-                console.log("teste3")
 
                 const ingredientsInsert = ingredients.map(name => {
                     return {
@@ -131,10 +126,7 @@ class FoodController{
 
                 await knex("food_ingredient")
                     .insert(ingredientsInsert);
-                console.log("teste4")
-
             }
-            console.log("teste5")
            
             return response.status(200).json();
         } catch (error) {
@@ -143,7 +135,6 @@ class FoodController{
             }
             return response.status(500).json({error});
         }       
-        
     }
 }
 
