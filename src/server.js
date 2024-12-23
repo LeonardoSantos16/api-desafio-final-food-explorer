@@ -7,7 +7,10 @@ const cors = require("cors");
 const routes = require('./routes')
 const app = express()
 app.use(express.json())
-app.use(cors());
+app.use(cors({
+  origin: ['https://desafio-final-explorer.netlify.app'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(routes)
 app.use('/files', express.static(uploadConfig.UPLOADS_FOLDER))
 app.use((error, request, response, next) => {
