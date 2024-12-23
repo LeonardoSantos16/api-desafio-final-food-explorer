@@ -23,7 +23,7 @@ class SessionsController{
 
         response.cookie("token", token, {
             httpOnly: true,
-            sameSite: "Strict",
+            sameSite: "None",
             secure: false,
             maxAge: 15 * 600 * 1000
           })
